@@ -1,113 +1,216 @@
+
+'use client'
 import Image from "next/image";
+import axios from 'axios'; 
+import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal, AwaitedReactNode, useEffect, useState, SetStateAction } from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
 
-export default function Home() {
+
+function SampleNextArrow(props: { className: any; style: any; onClick: any; }) {
+  const { className, style, onClick } = props;
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div
+      className={className}
+      style={{ ...style, display: "block", background: "gray", borderRadius: 10 }}
+      onClick={onClick}
+    />
+  );
+}
+
+function SamplePrevArrow(props: { className: any; style: any; onClick: any; }) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{ ...style, display: "block", background: "gray", borderRadius: 10 }}
+      onClick={onClick}
+    />
+  );
+}
+
+
+export default  function Home() {
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    nextArrow: <SampleNextArrow className={undefined} style={undefined} onClick={undefined} />,
+    prevArrow: <SamplePrevArrow className={undefined} style={undefined} onClick={undefined} />
+  };
+
+   const [data, setData] = useState([]);
+
+ 
+
+   var formatter = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+  });
+
+  useEffect(() => {
+    axios.get('http://localhost:8000/api/get')
+      .then((res) => {
+       console.log(res)
+       setData(res.data)
+      });
+  }, []);
+
+  const [showResults, setShowResults] = useState(false)
+  const onClick = () => setShowResults(true)
+  const onClick1 = () => setShowResults(false)
+
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-white">
+    
+
+      
+    { showResults ?   
+        <div><p className="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-1xl lg:text-1xl" style={{color:'#1A8395', alignSelf:'flex-start'}}>Ver Outros Projetos do Proponente</p>
+        <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-8xl lg:grid-cols-3 lg:text-left" > 
+
+
+        {data.map((post: {
+            [x: string]: ReactNode; id: Key | null | undefined; nome: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<AwaitedReactNode> | null | undefined; 
+        })=>
+              <div  key={post.id} className="max-w-sm p-8 bg-white border border-gray-200 rounded-lg shadow dark:bg-white-800 dark:border-white-700">
+                <span className="inline-flex items-center bg-100 text-800 text-xs font-medium px-2.5 py-0.5  dark:bg-900 dark:text-300" style={{color:'#C6A08B', borderRadius: 2, backgroundColor: '#FFF2DB'}}>               
+                  ROUANET
+                </span>              
+                    <h5 className="mb-2 text-1xl font-semibold tracking-tight text-gray-900 dark:text-ddak">{post.nome}</h5>
+                    <p>{post.municipio} • {post.uf}  </p>
+                <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. </p>
+                <div className="flex flex-row ...">
+                  <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">Aprovado </p>      <p className="font-semibold tracking-tight text-gray-900 dark:text-ddak" style={{marginLeft: 25}}>{formatter.format(post.valor_aprovado)}</p>  
+                  </div>
+                  <div className="flex flex-row ...">
+                <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">Captado  </p>        <p className="font-semibold tracking-tight text-gray-900 dark:text-ddak" style={{marginLeft: 25}}>{formatter.format(post.valor_captado)}</p>
+                </div>  
+
+                <div className="flex flex-row ..." style={{marginLeft: 75}}>
+                <button disabled type="button" className="py-2.5 px-5 me-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-blue-700 focus:text-blue-700 dark:bg-white-800 dark:text-gray-400 dark:border-gray-300 dark:hover:text-white dark:hover:bg-gray-700 inline-flex items-center">
+                  ADICIONAR
+                </button>
+                <button type="button" className="py-2.5 px-5 me-2 text-sm font-medium text-gray-900 bg-white rounded-lg  hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-blue-700 focus:text-blue-700 dark:bg-white-800 dark:text-gray-400  dark:hover:text-white dark:hover:bg-gray-700 inline-flex items-center">
+        
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" 
+                  width="24px" height="24px" viewBox="0 0 37 32" enable-background="new 0 0 37 32">
+                <g>
+                  <path fill="#828282" d="M27,0c-2.476,0-4.856,0.921-6.704,2.595C19.594,3.23,18.993,3.952,18.5,4.749
+                    c-0.493-0.797-1.094-1.519-1.796-2.155C14.856,0.921,12.476,0,10,0C4.486,0,0,4.486,0,10c0,3.722,1.158,6.66,3.871,9.825
+                    c3.942,4.6,13.919,11.62,14.342,11.917c0.086,0.061,0.187,0.091,0.287,0.091s0.201-0.03,0.287-0.091
+                    c0.423-0.297,10.4-7.317,14.343-11.917C35.842,16.66,37,13.722,37,10C37,4.486,32.514,0,27,0z M32.371,19.175
+                    C28.876,23.251,20.191,29.516,18.5,30.72c-1.691-1.204-10.376-7.469-13.87-11.545C2.085,16.206,1,13.462,1,10c0-4.963,4.038-9,9-9
+                    c2.227,0,4.37,0.829,6.032,2.335c0.838,0.76,1.518,1.656,2.02,2.664c0.17,0.34,0.726,0.34,0.896,0
+                    c0.502-1.008,1.182-1.904,2.02-2.663C22.63,1.829,24.773,1,27,1c4.962,0,9,4.037,9,9C36,13.462,34.915,16.206,32.371,19.175z"/>
+                </g>
+                </svg>
+                  </button>
+
+
+                  </div>
+                
+              </div>
+          )}    
+
         </div>
-      </div>
+        </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+: 
+    
+       <div className='w-3/4 m-auto'>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+          <div className="mt-20">
+          <p className="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-1xl lg:text-1xl" style={{color:'#1A8395', alignSelf:'flex-start'}}>Ver Outros Projetos do Proponente</p>
+          <Slider {...settings}>
+          {data.map((post: {
+              [x: string]: ReactNode; id: Key | null | undefined; nome: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<AwaitedReactNode> | null | undefined; 
+          })=>
+                <div  key={post.id} className="max-w-sm p-8 bg-white border border-gray-200 rounded-lg shadow dark:bg-white-800 dark:border-white-700">
+                  <span className="inline-flex items-center bg-100 text-800 text-xs font-medium px-2.5 py-0.5  dark:bg-900 dark:text-300" style={{color:'#C6A08B', borderRadius: 2, backgroundColor: '#FFF2DB'}}>               
+                    ROUANET
+                  </span>              
+                      <h5 className="mb-2 text-1xl font-semibold tracking-tight text-gray-900 dark:text-ddak">{post.nome}</h5>
+                      <p>{post.municipio} • {post.uf}  </p>
+                  <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. </p>
+                  <div className="flex flex-row ...">
+                    <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">Aprovado </p>      <p className="font-semibold tracking-tight text-gray-900 dark:text-ddak" style={{marginLeft: 25}}>{formatter.format(post.valor_aprovado)}</p>  
+                    </div>
+                    <div className="flex flex-row ...">
+                  <p className="mb-3 font-normal text-gray-500 dark:text-gray-400">Captado  </p>        <p className="font-semibold tracking-tight text-gray-900 dark:text-ddak" style={{marginLeft: 25}}>{formatter.format(post.valor_captado)}</p>
+                  </div>  
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+                  <div className="flex flex-row ..." style={{marginLeft: 75}}>
+                  <button disabled type="button" className="py-2.5 px-5 me-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-blue-700 focus:text-blue-700 dark:bg-white-800 dark:text-gray-400 dark:border-gray-300 dark:hover:text-white dark:hover:bg-gray-700 inline-flex items-center">
+                    ADICIONAR
+                  </button>
+                  <button type="button" className="py-2.5 px-5 me-2 text-sm font-medium text-gray-900 bg-white rounded-lg  hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-blue-700 focus:text-blue-700 dark:bg-white-800 dark:text-gray-400  dark:hover:text-white dark:hover:bg-gray-700 inline-flex items-center">
+          
+                  <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" 
+                    width="24px" height="24px" viewBox="0 0 37 32" enable-background="new 0 0 37 32">
+                  <g>
+                    <path fill="#828282" d="M27,0c-2.476,0-4.856,0.921-6.704,2.595C19.594,3.23,18.993,3.952,18.5,4.749
+                      c-0.493-0.797-1.094-1.519-1.796-2.155C14.856,0.921,12.476,0,10,0C4.486,0,0,4.486,0,10c0,3.722,1.158,6.66,3.871,9.825
+                      c3.942,4.6,13.919,11.62,14.342,11.917c0.086,0.061,0.187,0.091,0.287,0.091s0.201-0.03,0.287-0.091
+                      c0.423-0.297,10.4-7.317,14.343-11.917C35.842,16.66,37,13.722,37,10C37,4.486,32.514,0,27,0z M32.371,19.175
+                      C28.876,23.251,20.191,29.516,18.5,30.72c-1.691-1.204-10.376-7.469-13.87-11.545C2.085,16.206,1,13.462,1,10c0-4.963,4.038-9,9-9
+                      c2.227,0,4.37,0.829,6.032,2.335c0.838,0.76,1.518,1.656,2.02,2.664c0.17,0.34,0.726,0.34,0.896,0
+                      c0.502-1.008,1.182-1.904,2.02-2.663C22.63,1.829,24.773,1,27,1c4.962,0,9,4.037,9,9C36,13.462,34.915,16.206,32.371,19.175z"/>
+                  </g>
+                  </svg>
+                    </button>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+
+                    </div>
+                  
+                </div>
+            )}    
+          </Slider>
+          </div>
+
+          </div>
+          }
+
+     
+
+    { showResults ? null :  <button  type="button" className="mb-3 font-normal text-gray-500 dark:text-gray-400" style={{alignSelf: 'flex-end'}} onClick={onClick}>+ VER TODOS</button>}
+    { showResults ? <button  type="button" className="mb-3 font-normal text-gray-500 dark:text-gray-400" style={{alignSelf: 'flex-end'}} onClick={onClick1}>- VER MENOS</button> : null }
     </main>
   );
 }
+
+
+const post = [
+  {
+    name: `John Morgan`,
+    img: `/students/John_Morgan.jpg`,
+    review: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`
+  },
+  {
+    name: `Ellie Anderson`,
+    img: `/students/Ellie_Anderson.jpg`,
+    review: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`
+  },
+  {
+    name: `Nia Adebayo`,
+    img: `/students/Nia_Adebayo.jpg`,
+    review: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`
+  },
+  {
+    name: `Rigo Louie`,
+    img: `/students/Rigo_Louie.jpg`,
+    review: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`
+  },
+  {
+    name: `Mia Williams`,
+    img: `/students/Mia_Williams.jpg`,
+    review: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`
+  },
+  
+];
